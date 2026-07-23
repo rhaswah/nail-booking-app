@@ -1,8 +1,34 @@
 # Connecting to byChronos POS
 
 This app is a customer-facing booking PWA. It reads your services, staff, and
-availability from **byChronos** and writes new appointments straight back into
-it, so the salon calendar stays the single source of truth.
+availability from **byChronos** and writes new appointments back into it, so the
+salon calendar stays the single source of truth.
+
+## TL;DR — it's already connected (live, no login)
+
+The default provider (`bychronos-public`) talks to the **same public API that
+powers your official byChronos booking page** (`go.bychronos.com/l/<slug>/a/services`).
+Your salon is identified by its public slug via an `X-Location-URL` header, so
+**reads need no credentials**: the app shows Fairy Nail Spa's real catalog, real
+techs, and real open times, pulled live.
+
+- Configured salon: `BYCHRONOS_LOCATION_URL=chicago-60657-fairy-nail-spa-805539`.
+- **Writes (creating an appointment in the live POS) are OFF by default**
+  (`BYCHRONOS_ALLOW_WRITE=false`) so testing never books real appointments in
+  your salon. With writes off a booking is captured locally and the confirmation
+  screen still works — perfect for demos.
+- **The admin login is only needed to turn writes on** (or to use the merchant
+  API below). Nothing customer-facing requires it. To make real bookings land in
+  byChronos we finish the write path (`POST /appointments`) — that step needs one
+  live test and possibly the customer phone-verification the official page uses.
+  That's the one remaining piece.
+
+The merchant OAuth path (next section) is an alternative write route if you'd
+rather push bookings with server-side credentials than via the public flow.
+
+---
+
+## Merchant OAuth API (alternative write path)
 
 ## How the connection works (and why it's safe)
 

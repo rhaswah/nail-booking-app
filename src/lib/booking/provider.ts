@@ -9,6 +9,7 @@ import type {
 } from "@/lib/booking/types";
 import { MockProvider } from "@/lib/booking/mock-provider";
 import { ByChronosProvider } from "@/lib/booking/bychronos-provider";
+import { ByChronosPublicProvider } from "@/lib/booking/bychronos-public-provider";
 
 /**
  * Abstraction every data source implements. The app only ever talks to a
@@ -39,13 +40,19 @@ let instance: BookingProvider | null = null;
 
 /**
  * Provider factory. Controlled by `BOOKING_PROVIDER` env var:
- *   - 'mock' (default): in-memory seed data, dev-server persistent.
- *   - 'bychronos': live byChronos POS connector (needs BYCHRONOS_* env vars).
+ *   - 'bychronos-public' (default): live public byChronos booking API — the
+ *     salon's real catalog/techs/availability, no credentials. Reads live;
+ *     writes gated by BYCHRONOS_ALLOW_WRITE.
+ *   - 'mock': in-memory sample data, dev-server persistent (no network).
+ *   - 'bychronos': merchant Go3 Schedule API connector (needs BYCHRONOS_* OAuth).
  */
 export function getProvider(): BookingProvider {
   if (instance) return instance;
-  const kind = process.env.BOOKING_PROVIDER ?? "mock";
+  const kind = process.env.BOOKING_PROVIDER ?? "bychronos-public";
   switch (kind) {
+    case "bychronos-public":
+      instance = new ByChronosPublicProvider();
+      return instance;
     case "mock":
       instance = new MockProvider();
       return instance;
