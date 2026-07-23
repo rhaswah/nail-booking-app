@@ -13,6 +13,7 @@ import {
 } from "@/lib/format";
 import type { Booking, BookingStatus, Service, Staff } from "@/lib/booking/types";
 import { DatePicker } from "./date-picker";
+import { PaintedNailIcon, Sparkle } from "@/components/decor";
 
 // NOTE(auth): This page is intentionally unauthenticated for the demo.
 // Staff auth (salon login / SSO) ships together with the byChronos POS
@@ -25,21 +26,41 @@ export const metadata: Metadata = {
 
 const PLAIN_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-const STATUS_STYLE: Record<BookingStatus, { label: string; className: string }> = {
+const STATUS_STYLE: Record<
+  BookingStatus,
+  { label: string; className: string; dot: string }
+> = {
   // amber = waiting for the byChronos connector to push it to the POS
-  pending_sync: { label: "Pending sync", className: "bg-amber-100 text-amber-800" },
+  pending_sync: {
+    label: "Pending sync",
+    className: "bg-amber-50 text-amber-800 ring-1 ring-amber-200/70",
+    dot: "bg-amber-500",
+  },
   // green = the POS has acknowledged this booking
-  synced: { label: "Synced", className: "bg-green-100 text-green-800" },
-  confirmed: { label: "Confirmed", className: "bg-blush-100 text-blush-700" },
-  cancelled: { label: "Cancelled", className: "bg-ink-100 text-ink-500" },
+  synced: {
+    label: "Synced",
+    className: "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200/70",
+    dot: "bg-emerald-500",
+  },
+  confirmed: {
+    label: "Confirmed",
+    className: "bg-pink-50 text-pink-700 ring-1 ring-pink-200/70",
+    dot: "bg-pink-500",
+  },
+  cancelled: {
+    label: "Cancelled",
+    className: "bg-ink-50 text-ink-500 ring-1 ring-ink-200/70",
+    dot: "bg-ink-300",
+  },
 };
 
 function StatusPill({ status }: { status: BookingStatus }) {
   const s = STATUS_STYLE[status];
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${s.className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${s.className}`}
     >
+      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} aria-hidden="true" />
       {s.label}
     </span>
   );
@@ -80,17 +101,18 @@ export default async function AdminPage({
       {/* ── Header ─────────────────────────────────────────────────── */}
       <header className="space-y-3">
         <div className="flex items-baseline justify-between gap-3">
-          <h1 className="text-xl font-semibold tracking-tight">
+          <h1 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight text-ink-800">
+            <PaintedNailIcon size={20} className="text-pink-500" />
             {salonConfig.name} · Day view
           </h1>
           <Link
             href="/"
-            className="text-sm font-medium text-blush-700 underline underline-offset-2"
+            className="text-sm font-medium text-pink-700 underline underline-offset-2"
           >
             Booking site
           </Link>
         </div>
-        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
+        <div className="flex items-start gap-2 rounded-cta border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
           <span
             className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500"
             aria-hidden="true"
@@ -109,7 +131,7 @@ export default async function AdminPage({
           <Link
             href={`/admin?date=${addDaysISO(dateISO, -1)}`}
             aria-label="Previous day"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ink-200 bg-white text-ink-800"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-cta border border-pink-200 bg-white text-ink-800 active:bg-pink-50"
           >
             <svg
               viewBox="0 0 24 24"
@@ -128,7 +150,7 @@ export default async function AdminPage({
           <Link
             href={`/admin?date=${addDaysISO(dateISO, 1)}`}
             aria-label="Next day"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ink-200 bg-white text-ink-800"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-cta border border-pink-200 bg-white text-ink-800 active:bg-pink-50"
           >
             <svg
               viewBox="0 0 24 24"
@@ -156,7 +178,7 @@ export default async function AdminPage({
                 {" · "}
                 <Link
                   href="/admin"
-                  className="font-medium text-blush-700 underline underline-offset-2"
+                  className="font-medium text-pink-700 underline underline-offset-2"
                 >
                   jump to today
                 </Link>
@@ -173,8 +195,13 @@ export default async function AdminPage({
 
       {/* ── Bookings ───────────────────────────────────────────────── */}
       {bookings.length === 0 ? (
-        <section className="rounded-2xl border border-ink-100 bg-white p-8 text-center shadow-sm">
-          <p className="font-medium">No bookings for this day</p>
+        <section className="rounded-card border border-pink-100 bg-white p-8 text-center shadow-pink">
+          <div className="mb-2 flex justify-center">
+            <Sparkle size={22} color="var(--color-pink-300)" twinkle />
+          </div>
+          <p className="font-display font-medium text-ink-800">
+            No bookings for this day
+          </p>
           <p className="mt-1 text-sm text-ink-500">
             New appointments made on the booking site show up here instantly.
           </p>
@@ -190,19 +217,19 @@ export default async function AdminPage({
             return (
               <li
                 key={b.id}
-                className={`rounded-2xl border border-ink-100 bg-white p-4 shadow-sm ${
+                className={`rounded-card border border-pink-100 bg-white p-4 shadow-pink ${
                   cancelled ? "opacity-60" : ""
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold tabular-nums">
+                    <p className="text-sm font-semibold tabular-nums text-ink-800">
                       {formatSlotTime(b.startISO)} – {endTime(b)}
                       <span className="ml-2 font-normal text-ink-400">
                         {formatDuration(b.totalDurationMinutes)}
                       </span>
                     </p>
-                    <p className="mt-1 truncate font-medium">
+                    <p className="mt-1 truncate font-medium text-ink-800">
                       {b.customer.firstName} {b.customer.lastName}
                     </p>
                     <p className="truncate text-sm text-ink-500 tabular-nums">
@@ -211,13 +238,13 @@ export default async function AdminPage({
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1.5">
                     <StatusPill status={b.status} />
-                    <p className="text-right text-base font-semibold tabular-nums">
+                    <p className="text-right text-base font-semibold tabular-nums text-pink-600">
                       {formatMoney(b.totalCents)}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-3 border-t border-ink-100 pt-3 space-y-1.5">
+                <div className="mt-3 border-t border-pink-100 pt-3 space-y-1.5">
                   <p className="text-sm text-ink-800">{names.join(" · ")}</p>
                   <p className="flex items-center gap-1.5 text-sm text-ink-500">
                     {tech && (

@@ -18,7 +18,7 @@ export function DatePicker({ value }: { value: string }) {
         }
       }}
       aria-label="Pick a date"
-      className="h-11 w-full rounded-xl border border-ink-200 bg-white px-3 text-sm font-medium text-ink-800 tabular-nums focus:border-blush-500 focus:outline-none focus:ring-2 focus:ring-blush-200"
+      className="h-11 w-full rounded-cta border border-pink-200 bg-white px-3 text-sm font-medium text-ink-800 tabular-nums focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-200"
     />
   );
 }

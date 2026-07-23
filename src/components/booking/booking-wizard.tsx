@@ -15,6 +15,7 @@ import type {
 import { ANY_STAFF } from "@/lib/booking/types";
 import { addDaysISO, formatDuration, formatMoney, salonDateISO } from "@/lib/format";
 import { salonConfig, type Weekday } from "@/lib/salon.config";
+import { Sparkle, WandIcon } from "@/components/decor";
 import StepServices from "./step-services";
 import StepArtist from "./step-artist";
 import StepTime from "./step-time";
@@ -254,7 +255,7 @@ export default function BookingWizard({
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Sticky header: back nav + progress */}
-      <header className="sticky top-0 z-20 border-b border-ink-100 bg-cream/95 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-pink-100 bg-cream/90 backdrop-blur">
         <div className="mx-auto w-full max-w-md px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             {step > 0 ? (
@@ -262,7 +263,7 @@ export default function BookingWizard({
                 type="button"
                 onClick={goBack}
                 aria-label="Back"
-                className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-ink-500 active:bg-ink-100"
+                className="-ml-1 flex h-10 w-10 items-center justify-center rounded-full border border-pink-100 bg-white text-pink-500 shadow-pink active:bg-pink-50"
               >
                 <BackChevron />
               </button>
@@ -270,29 +271,53 @@ export default function BookingWizard({
               <Link
                 href="/"
                 aria-label={`Back to ${salonConfig.name}`}
-                className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-ink-500 active:bg-ink-100"
+                className="-ml-1 flex h-10 w-10 items-center justify-center rounded-full border border-pink-100 bg-white text-pink-500 shadow-pink active:bg-pink-50"
               >
                 <BackChevron />
               </Link>
             )}
             <div className="min-w-0">
-              <p className="text-xs text-ink-500 tabular-nums">
+              <p className="text-xs font-medium text-pink-500 tabular-nums">
                 Step {step + 1} of {STEPS.length}
               </p>
-              <h1 className="truncate text-base font-semibold tracking-tight">
+              <h1 className="flex items-center gap-1.5 truncate font-display text-base font-semibold tracking-tight text-ink-800">
                 {STEPS[step].title}
+                <Sparkle
+                  size={14}
+                  color="var(--color-sparkle)"
+                  twinkle
+                  className="shrink-0"
+                />
               </h1>
             </div>
           </div>
-          <div className="mt-3 flex gap-1.5" aria-hidden="true">
-            {STEPS.map((s, i) => (
+
+          {/* Step indicator — a row of little sparkle stars over a shimmery bar */}
+          <div className="mt-3">
+            <div className="relative h-1.5 overflow-hidden rounded-full bg-pink-100">
               <div
-                key={s.hash}
-                className={`h-1 flex-1 rounded-full transition-colors ${
-                  i <= step ? "bg-blush-500" : "bg-ink-100"
-                }`}
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-pink-400 to-lilac-500 transition-[width] duration-500 ease-out"
+                style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+                aria-hidden="true"
               />
-            ))}
+            </div>
+            <div className="mt-2 flex justify-between px-0.5" aria-hidden="true">
+              {STEPS.map((s, i) => (
+                <Sparkle
+                  key={s.hash}
+                  size={i === step ? 16 : 13}
+                  color={
+                    i < step
+                      ? "var(--color-pink-400)"
+                      : i === step
+                        ? "var(--color-pink-500)"
+                        : "var(--color-pink-200)"
+                  }
+                  twinkle={i === step}
+                  className="transition-all"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -342,14 +367,15 @@ export default function BookingWizard({
         )}
       </main>
 
-      {/* Sticky bottom CTA bar */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-100 bg-white/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur">
+      {/* Sticky bottom CTA bar — sparkly running total + shimmer confirm */}
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-pink-100 bg-white/90 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-pink-lg backdrop-blur">
         <div className="mx-auto flex w-full max-w-md items-center gap-3">
           <div className="min-w-0 shrink-0">
             {selectedServiceIds.length > 0 ? (
               <>
-                <p className="text-base font-semibold tabular-nums">
+                <p className="flex items-center gap-1 text-lg font-semibold text-ink-800 tabular-nums">
                   {formatMoney(totalCents)}
+                  <Sparkle size={13} color="var(--color-sparkle)" twinkle />
                 </p>
                 <p className="text-xs text-ink-500 tabular-nums">
                   {selectedServiceIds.length}{" "}
@@ -365,9 +391,15 @@ export default function BookingWizard({
             type="button"
             onClick={onCta}
             disabled={!cta.enabled}
-            className="h-12 flex-1 rounded-xl bg-blush-500 font-medium text-white transition-colors active:bg-blush-600 disabled:bg-ink-200 disabled:text-ink-400"
+            className="relative h-12 flex-1 overflow-hidden rounded-cta bg-gradient-to-r from-pink-500 to-pink-600 font-medium text-white shadow-pink transition-colors active:from-pink-600 active:to-pink-700 disabled:from-ink-200 disabled:to-ink-200 disabled:text-ink-400 disabled:shadow-none"
           >
-            {cta.label}
+            <span className="relative z-10 flex items-center justify-center gap-1.5">
+              {step === 4 && !submitting && (
+                <WandIcon size={18} className="text-white" />
+              )}
+              {cta.label}
+            </span>
+            {cta.enabled && <span className="shimmer-sweep" />}
           </button>
         </div>
       </div>

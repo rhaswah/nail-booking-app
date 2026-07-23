@@ -7,6 +7,7 @@ import {
   formatMoney,
   formatSlotTime,
 } from "@/lib/format";
+import { HeartIcon, Sparkle } from "@/components/decor";
 import type { CustomerDraft } from "./validation";
 
 interface StepReviewProps {
@@ -38,13 +39,16 @@ export default function StepReview({
       </p>
 
       {/* Appointment summary */}
-      <section className="space-y-3 rounded-2xl border border-ink-100 bg-white p-4 shadow-sm">
+      <section className="space-y-3 rounded-card border border-pink-100 bg-white p-4 shadow-pink">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold tracking-tight">Your appointment</h2>
+          <h2 className="flex items-center gap-1.5 font-display font-semibold tracking-tight text-ink-800">
+            Your appointment
+            <Sparkle size={13} color="var(--color-sparkle)" twinkle />
+          </h2>
           <button
             type="button"
             onClick={() => onEdit(0)}
-            className="text-sm font-medium text-blush-700"
+            className="text-sm font-medium text-pink-700"
           >
             Edit
           </button>
@@ -53,25 +57,25 @@ export default function StepReview({
         <ul className="space-y-2">
           {services.map((s) => (
             <li key={s.id} className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 text-sm">{s.name}</span>
-              <span className="text-right text-sm tabular-nums">
+              <span className="min-w-0 text-sm text-ink-800">{s.name}</span>
+              <span className="text-right text-sm text-ink-800 tabular-nums">
                 {formatMoney(s.priceCents)}
               </span>
             </li>
           ))}
         </ul>
 
-        <hr className="border-ink-100" />
+        <hr className="border-pink-100" />
 
         <dl className="space-y-2 text-sm">
           <div className="flex items-center justify-between gap-3">
             <dt className="text-ink-500">Artist</dt>
-            <dd className="flex items-center gap-2">
+            <dd className="flex items-center gap-2 text-ink-800">
               {artistLabel}
               <button
                 type="button"
                 onClick={() => onEdit(1)}
-                className="text-xs font-medium text-blush-700"
+                className="text-xs font-medium text-pink-700"
               >
                 Edit
               </button>
@@ -79,12 +83,12 @@ export default function StepReview({
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="text-ink-500">Date &amp; time</dt>
-            <dd className="flex items-center gap-2 tabular-nums">
+            <dd className="flex items-center gap-2 text-ink-800 tabular-nums">
               {formatDateLabel(slot.startISO)} · {formatSlotTime(slot.startISO)}
               <button
                 type="button"
                 onClick={() => onEdit(2)}
-                className="text-xs font-medium text-blush-700"
+                className="text-xs font-medium text-pink-700"
               >
                 Edit
               </button>
@@ -92,15 +96,20 @@ export default function StepReview({
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="text-ink-500">Duration</dt>
-            <dd className="tabular-nums">{formatDuration(totalMinutes)}</dd>
+            <dd className="text-ink-800 tabular-nums">
+              {formatDuration(totalMinutes)}
+            </dd>
           </div>
         </dl>
 
-        <hr className="border-ink-100" />
+        <hr className="border-pink-100" />
 
-        <div className="flex items-baseline justify-between">
-          <span className="font-semibold">Total</span>
-          <span className="text-right text-lg font-semibold tabular-nums">
+        <div className="flex items-baseline justify-between rounded-cta bg-pink-50 px-3 py-2.5">
+          <span className="flex items-center gap-1.5 font-semibold text-ink-800">
+            <Sparkle size={14} color="var(--color-pink-400)" twinkle />
+            Total
+          </span>
+          <span className="text-right text-lg font-semibold text-pink-700 tabular-nums">
             {formatMoney(totalCents)}
           </span>
         </div>
@@ -108,18 +117,21 @@ export default function StepReview({
       </section>
 
       {/* Contact summary */}
-      <section className="space-y-2 rounded-2xl border border-ink-100 bg-white p-4 shadow-sm">
+      <section className="space-y-2 rounded-card border border-pink-100 bg-white p-4 shadow-pink">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold tracking-tight">Your info</h2>
+          <h2 className="flex items-center gap-1.5 font-display font-semibold tracking-tight text-ink-800">
+            <HeartIcon size={16} className="text-pink-500" />
+            Your info
+          </h2>
           <button
             type="button"
             onClick={() => onEdit(3)}
-            className="text-sm font-medium text-blush-700"
+            className="text-sm font-medium text-pink-700"
           >
             Edit
           </button>
         </div>
-        <p className="text-sm">
+        <p className="text-sm text-ink-800">
           {customer.firstName.trim()} {customer.lastName.trim()}
         </p>
         <p className="text-sm text-ink-500 tabular-nums">{customer.phone}</p>
@@ -134,13 +146,13 @@ export default function StepReview({
       {submitError && (
         <div
           role="alert"
-          className="space-y-3 rounded-2xl border border-blush-200 bg-blush-50 p-4"
+          className="space-y-3 rounded-card border border-pink-200 bg-pink-50 p-4 shadow-pink"
         >
-          <p className="text-sm text-blush-700">{submitError}</p>
+          <p className="text-sm text-pink-700">{submitError}</p>
           <button
             type="button"
             onClick={() => onEdit(2)}
-            className="h-12 w-full rounded-xl border border-blush-300 bg-white font-medium text-blush-700"
+            className="h-12 w-full rounded-cta border border-pink-300 bg-white font-medium text-pink-700 active:bg-pink-50"
           >
             Choose a different time
           </button>

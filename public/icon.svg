@@ -1,14 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Lume Nail Studio app icon: blush rounded square + nail-polish bottle -->
-  <rect width="512" height="512" rx="116" fill="#ce6b69"/>
-  <!-- cap -->
-  <rect x="226" y="96" width="60" height="82" rx="18" fill="#f9e9e8"/>
-  <!-- neck -->
-  <rect x="240" y="168" width="32" height="60" fill="#ffffff"/>
-  <!-- bottle body -->
-  <rect x="172" y="216" width="168" height="200" rx="52" fill="#ffffff"/>
-  <!-- polish level inside bottle -->
-  <rect x="196" y="308" width="120" height="84" rx="30" fill="#eab6b3"/>
-  <!-- highlight -->
-  <circle cx="212" cy="262" r="14" fill="#f9e9e8"/>
+  <!-- Fairy Nail Spa app icon: pink→lilac gradient rounded square with a fairy + sparkles -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff9ec8"/>
+      <stop offset="0.55" stop-color="#f24e97"/>
+      <stop offset="1" stop-color="#9d63ea"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="116" fill="url(#glow)"/>
+
+  <!-- Fairy wings -->
+  <g fill="#efe6ff" opacity="0.92">
+    <path d="M256 300c-44-78-124-108-168-70-38 38-16 116 46 138 46 16 100-16 122-68Z"/>
+    <path d="M256 300c44-78 124-108 168-70 38 38 16 116-46 138-46 16-100-16-122-68Z"/>
+  </g>
+  <g fill="#ffffff" opacity="0.35">
+    <path d="M240 296c-32-52-88-74-116-48-24 26-8 76 40 92 32 10 64-8 76-44Z"/>
+    <path d="M272 296c32-52 88-74 116-48 24 26 8 76-40 92-32 10-64-8-76-44Z"/>
+  </g>
+
+  <!-- Dress -->
+  <path d="M256 250c26 0 42 18 50 44l32 108c5 18-8 26-24 26H198c-16 0-29-8-24-26l32-108c8-26 24-44 50-44Z" fill="#fff5fa"/>
+  <path d="M256 250c26 0 42 18 50 44l14 48H196l14-48c8-26 24-44 46-44Z" fill="#ffe0ee"/>
+
+  <!-- Head -->
+  <circle cx="256" cy="196" r="54" fill="#ffe4d1"/>
+  <!-- Hair -->
+  <path d="M202 190c0-42 24-66 54-66s54 24 54 66c-16-16-32-20-54-20s-38 4-54 20Z" fill="#9d63ea"/>
+  <circle cx="210" cy="164" r="16" fill="#9d63ea"/>
+  <circle cx="302" cy="164" r="16" fill="#9d63ea"/>
+  <!-- Cheeks -->
+  <circle cx="232" cy="210" r="9" fill="#ff9ec8"/>
+  <circle cx="280" cy="210" r="9" fill="#ff9ec8"/>
+
+  <!-- Wand with star tip -->
+  <path d="M322 320l70-70" stroke="#f7c948" stroke-width="16" stroke-linecap="round"/>
+  <path d="M404 214c5 26 15 36 41 41-26 5-36 15-41 41-5-26-15-36-41-41 26-5 36-15 41-41Z" fill="#f7c948"/>
+
+  <!-- Scattered sparkles -->
+  <path d="M118 120c3 15 8 20 23 23-15 3-20 8-23 23-3-15-8-20-23-23 15-3 20-8 23-23Z" fill="#fff2c2"/>
+  <path d="M410 360c2 11 6 15 17 17-11 2-15 6-17 17-2-11-6-15-17-17 11-2 15-6 17-17Z" fill="#fff2c2"/>
+  <path d="M132 380c2 9 5 12 14 14-9 2-12 5-14 14-2-9-5-12-14-14 9-2 12-5 14-14Z" fill="#ffffff" opacity="0.85"/>
 </svg>

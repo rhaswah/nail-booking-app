@@ -10,8 +10,10 @@ interface StepDetailsProps {
 }
 
 const inputClass = (invalid: boolean) =>
-  `h-12 w-full rounded-xl border bg-white px-4 text-base text-ink-800 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-blush-200 ${
-    invalid ? "border-blush-500" : "border-ink-200 focus:border-blush-400"
+  `h-12 w-full rounded-cta border bg-white px-4 text-base text-ink-800 placeholder:text-ink-400 transition-shadow focus:outline-none focus:ring-4 focus:ring-pink-200/60 ${
+    invalid
+      ? "border-pink-500"
+      : "border-pink-200 focus:border-pink-400"
   }`;
 
 export default function StepDetails({ draft, onChange }: StepDetailsProps) {
@@ -96,7 +98,7 @@ export default function StepDetails({ draft, onChange }: StepDetailsProps) {
             placeholder="Allergies, nail art inspo, coming with a friend…"
             value={draft.notes}
             onChange={(e) => onChange({ notes: e.target.value })}
-            className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-base text-ink-800 placeholder:text-ink-400 focus:border-blush-400 focus:outline-none focus:ring-2 focus:ring-blush-200"
+            className="w-full rounded-cta border border-pink-200 bg-white px-4 py-3 text-base text-ink-800 placeholder:text-ink-400 transition-shadow focus:border-pink-400 focus:outline-none focus:ring-4 focus:ring-pink-200/60"
           />
         </Field>
       </div>
@@ -123,7 +125,7 @@ function Field({
         {label}
       </span>
       {children}
-      {error && <span className="mt-1 block text-xs text-blush-700">{error}</span>}
+      {error && <span className="mt-1 block text-xs text-pink-700">{error}</span>}
     </label>
   );
 }

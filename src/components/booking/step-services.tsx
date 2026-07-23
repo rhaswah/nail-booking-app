@@ -2,6 +2,7 @@
 
 import type { Service, ServiceCategory } from "@/lib/booking/types";
 import { formatDuration, formatMoney } from "@/lib/format";
+import { HeartIcon, PaintedNailIcon, Sparkle } from "@/components/decor";
 
 interface StepServicesProps {
   categories: ServiceCategory[];
@@ -30,8 +31,9 @@ export default function StepServices({
           <section key={cat.id} aria-labelledby={`cat-${cat.id}`}>
             <h2
               id={`cat-${cat.id}`}
-              className="text-lg font-semibold tracking-tight"
+              className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink-800"
             >
+              <PaintedNailIcon size={20} className="shrink-0 text-pink-500" />
               {cat.name}
             </h2>
             <p className="mt-0.5 text-sm text-ink-500">{cat.description}</p>
@@ -44,18 +46,21 @@ export default function StepServices({
                     type="button"
                     aria-pressed={selected}
                     onClick={() => onToggle(s.id)}
-                    className={`w-full rounded-2xl border p-4 text-left shadow-sm transition-colors ${
+                    className={`w-full rounded-card border p-4 text-left transition-all ${
                       selected
-                        ? "border-blush-500 bg-blush-50"
-                        : "border-ink-100 bg-white"
+                        ? "border-pink-500 bg-pink-50 shadow-pink"
+                        : "border-pink-100 bg-white shadow-pink active:bg-pink-50/50"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium">{s.name}</span>
+                          <span className="font-medium text-ink-800">
+                            {s.name}
+                          </span>
                           {s.popular && (
-                            <span className="rounded-full bg-blush-100 px-2 py-0.5 text-xs text-blush-700">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-pink-700">
+                              <HeartIcon size={11} className="text-pink-500" />
                               Popular
                             </span>
                           )}
@@ -68,28 +73,32 @@ export default function StepServices({
                         </p>
                       </div>
                       <div className="flex shrink-0 flex-col items-end gap-2">
-                        <span className="text-right font-semibold tabular-nums">
+                        <span className="text-right font-semibold text-ink-800 tabular-nums">
                           {formatMoney(s.priceCents)}
                         </span>
                         <span
                           aria-hidden="true"
                           className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${
                             selected
-                              ? "border-blush-500 bg-blush-500 text-white"
-                              : "border-ink-200 bg-white text-transparent"
+                              ? "border-pink-500 bg-pink-500 text-white shadow-pink"
+                              : "border-pink-200 bg-white text-transparent"
                           }`}
                         >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-3.5 w-3.5"
-                          >
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
+                          {selected ? (
+                            <Sparkle size={15} color="#fff" />
+                          ) : (
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-3.5 w-3.5"
+                            >
+                              <path d="M20 6L9 17l-5-5" />
+                            </svg>
+                          )}
                         </span>
                       </div>
                     </div>

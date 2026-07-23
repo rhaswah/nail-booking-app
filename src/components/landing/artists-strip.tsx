@@ -1,4 +1,5 @@
 import type { Staff } from "@/lib/booking/types";
+import { Sparkle, HandNailsIcon } from "@/components/decor";
 
 function initials(name: string): string {
   return name
@@ -15,9 +16,11 @@ export function ArtistsStrip({ staff }: { staff: Staff[] }) {
       <div>
         <h2
           id="artists-heading"
-          className="text-2xl font-semibold tracking-tight text-ink-900"
+          className="font-display flex items-center gap-2 text-2xl font-semibold tracking-tight text-ink-900"
         >
+          <HandNailsIcon size={24} className="text-pink-500" />
           Meet the artists
+          <Sparkle size={16} color="var(--color-sparkle)" twinkle />
         </h2>
         <p className="mt-1 text-sm text-ink-500">
           Pick a favorite when you book — or choose any available technician.
@@ -28,18 +31,26 @@ export function ArtistsStrip({ staff }: { staff: Staff[] }) {
         {staff.map((tech) => (
           <li
             key={tech.id}
-            className="w-44 shrink-0 snap-start space-y-2.5 rounded-2xl border border-ink-100 bg-white p-4 shadow-sm"
+            className="w-44 shrink-0 snap-start space-y-2.5 rounded-card border border-pink-100 bg-white p-4 shadow-pink"
           >
-            <span
-              aria-hidden
-              className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold text-white"
-              style={{ backgroundColor: tech.avatarColor }}
-            >
-              {initials(tech.name)}
+            <span className="relative inline-flex">
+              <span
+                aria-hidden
+                className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold text-white shadow-pink"
+                style={{ backgroundColor: tech.avatarColor }}
+              >
+                {initials(tech.name)}
+              </span>
+              <Sparkle
+                size={13}
+                color="var(--color-sparkle)"
+                twinkle
+                className="absolute -right-1 -top-1"
+              />
             </span>
             <div>
               <p className="text-sm font-semibold text-ink-800">{tech.name}</p>
-              <p className="mt-0.5 text-xs text-blush-700">{tech.role}</p>
+              <p className="mt-0.5 text-xs font-medium text-pink-600">{tech.role}</p>
             </div>
             <p className="text-xs leading-5 text-ink-500">{tech.bio}</p>
           </li>

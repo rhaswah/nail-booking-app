@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf7f2; /* cream */
-  --foreground: #2e2b27; /* ink-800 */
+  --background: #fff5fa; /* soft pink-cream */
+  --foreground: #4a2a3d; /* deep plum-ink text */
 }
 
 @theme inline {
@@ -10,43 +10,204 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --font-script: var(--font-script);
 }
 
 @theme {
-  /* ── Blush (rose) accent scale ─────────────────────────────── */
-  --color-blush-50: #fcf5f4;
-  --color-blush-100: #f9e9e8;
-  --color-blush-200: #f3d5d3;
-  --color-blush-300: #eab6b3;
-  --color-blush-400: #de908d;
-  --color-blush-500: #ce6b69;
-  --color-blush-600: #b85351;
-  --color-blush-700: #9a4140;
-  --color-blush-800: #813837;
-  --color-blush-900: #6e3231;
+  /* ══════════════════════════════════════════════════════════════
+     FAIRY NAIL SPA — pretty pink fairytale palette
+     ══════════════════════════════════════════════════════════════ */
 
-  /* ── Cream background ──────────────────────────────────────── */
-  --color-cream: #faf7f2;
+  /* ── Pink scale (cotton-candy → deep rose) — PRIMARY ─────────── */
+  --color-pink-50: #fff0f6;
+  --color-pink-100: #ffe0ee;
+  --color-pink-200: #ffc2dd;
+  --color-pink-300: #ff9ec8;
+  --color-pink-400: #fb77af;
+  --color-pink-500: #f24e97; /* primary accent — bubblegum */
+  --color-pink-600: #db2f7e;
+  --color-pink-700: #b81f66;
+  --color-pink-800: #971a54;
+  --color-pink-900: #7c1846;
 
-  /* ── Warm charcoal ink scale (text + neutrals) ─────────────── */
-  --color-ink-50: #f6f5f3;
-  --color-ink-100: #e8e6e3;
-  --color-ink-200: #d3d0cc;
-  --color-ink-300: #b0aca6;
-  --color-ink-400: #8a857e;
-  --color-ink-500: #6b665f;
-  --color-ink-600: #524e48;
-  --color-ink-700: #403c37;
-  --color-ink-800: #2e2b27;
-  --color-ink-900: #211f1c;
+  /* ── Lilac / lavender scale — SECONDARY ──────────────────────── */
+  --color-lilac-50: #f8f4ff;
+  --color-lilac-100: #efe6ff;
+  --color-lilac-200: #e0ccff;
+  --color-lilac-300: #cba9fb;
+  --color-lilac-400: #b485f4;
+  --color-lilac-500: #9d63ea;
+  --color-lilac-600: #854bd4;
+  --color-lilac-700: #6d3ab2;
+  --color-lilac-800: #5a3193;
+  --color-lilac-900: #4a2a78;
 
-  /* ── Radii — generous rounded corners ──────────────────────── */
-  --radius-card: 1rem; /* rounded-card */
-  --radius-cta: 0.875rem; /* rounded-cta */
+  /* ── Shimmer / gold accent ───────────────────────────────────── */
+  --color-sparkle: #f7c948; /* soft gold */
+  --color-sparkle-glow: #fff2c2; /* light gold glow */
+
+  /* ── Page cream (soft pink) ──────────────────────────────────── */
+  --color-cream: #fff5fa;
+
+  /* ── Blush (legacy back-compat) ──────────────────────────────── */
+  --color-blush-50: #fff0f6;
+  --color-blush-100: #ffe0ee;
+  --color-blush-200: #ffc2dd;
+  --color-blush-300: #ff9ec8;
+  --color-blush-400: #fb77af;
+  --color-blush-500: #f24e97;
+  --color-blush-600: #db2f7e;
+  --color-blush-700: #b81f66;
+  --color-blush-800: #971a54;
+  --color-blush-900: #7c1846;
+
+  /* ── Ink scale (plum-tinted neutrals, text) ──────────────────── */
+  --color-ink-50: #faf5f8;
+  --color-ink-100: #f2e7ee;
+  --color-ink-200: #e4cfdc;
+  --color-ink-300: #cba9bf;
+  --color-ink-400: #a67e97;
+  --color-ink-500: #855f77;
+  --color-ink-600: #6a495e;
+  --color-ink-700: #573b4d;
+  --color-ink-800: #4a2a3d;
+  --color-ink-900: #331c2a;
+
+  /* ── Radii — pillowy rounded corners ─────────────────────────── */
+  --radius-card: 1.25rem; /* rounded-card — 20px */
+  --radius-cta: 1rem; /* rounded-cta — 16px */
+
+  /* ── Pink-tinted soft shadows ────────────────────────────────── */
+  --shadow-pink: 0 8px 24px -6px rgba(242, 78, 151, 0.28);
+  --shadow-pink-lg: 0 16px 40px -8px rgba(242, 78, 151, 0.32);
+  --shadow-lilac: 0 8px 24px -6px rgba(157, 99, 234, 0.24);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   Animations — twinkle (sparkles) + shimmer (button sweep)
+   ══════════════════════════════════════════════════════════════ */
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  60%,
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Base
+   ══════════════════════════════════════════════════════════════ */
+
 body {
-  background: var(--background);
+  /* very subtle pastel gradient wash over the pink-cream base */
+  background-color: var(--background);
+  background-image:
+    radial-gradient(
+      120% 80% at 100% 0%,
+      rgba(255, 194, 221, 0.55) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      110% 70% at 0% 5%,
+      rgba(224, 204, 255, 0.5) 0%,
+      transparent 50%
+    );
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Utility helpers (glam agents may use these)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Pink gradient text (headings / salon name flourish) */
+.text-gradient-pink {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-pink-500) 0%,
+    var(--color-lilac-500) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Pink-tinted pillowy shadow */
+.shadow-pink {
+  box-shadow: var(--shadow-pink);
+}
+.shadow-pink-lg {
+  box-shadow: var(--shadow-pink-lg);
+}
+.shadow-lilac {
+  box-shadow: var(--shadow-lilac);
+}
+
+/* Animation utilities */
+.animate-twinkle {
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+.animate-float-soft {
+  animation: float-soft 4s ease-in-out infinite;
+}
+
+/* Shimmer sweep — wrap a button in `.shimmer` and drop a
+   `<span class="shimmer-sweep" />` inside (overflow-hidden parent). */
+.shimmer-sweep {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.shimmer-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  animation: shimmer 3.2s ease-in-out infinite;
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-twinkle,
+  .animate-float-soft,
+  .shimmer-sweep::after {
+    animation: none;
+  }
 }
