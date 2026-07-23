@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Lume Nail Studio app icon: blush rounded square + nail-polish bottle -->
+  <rect width="512" height="512" rx="116" fill="#ce6b69"/>
+  <!-- cap -->
+  <rect x="226" y="96" width="60" height="82" rx="18" fill="#f9e9e8"/>
+  <!-- neck -->
+  <rect x="240" y="168" width="32" height="60" fill="#ffffff"/>
+  <!-- bottle body -->
+  <rect x="172" y="216" width="168" height="200" rx="52" fill="#ffffff"/>
+  <!-- polish level inside bottle -->
+  <rect x="196" y="308" width="120" height="84" rx="30" fill="#eab6b3"/>
+  <!-- highlight -->
+  <circle cx="212" cy="262" r="14" fill="#f9e9e8"/>
+</svg>
