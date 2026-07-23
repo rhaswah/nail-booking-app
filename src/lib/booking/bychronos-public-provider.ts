@@ -179,39 +179,31 @@ export class ByChronosPublicProvider implements BookingProvider {
   }
 
   async getStaff(): Promise<Staff[]> {
-    const cats = await this.catalog();
-    // One entry per tech, keyed by display name. byChronos can hold several
-    // resource rows for the same person (or duplicate staff records); collapsing
-    // by name keeps the customer picker clean. We keep the first resource id as
-    // the bookable id and union the services they perform.
-    const byPerson = new Map<
-      string,
-      { bookingId: string; name: string; serviceIds: Set<string> }
-    >();
-    for (const c of cats) {
-      for (const s of c.services ?? []) {
-        for (const r of s.resources ?? []) {
-          if (r.resourceable_type !== "person") continue;
-          const key = r.name.trim().toLowerCase();
-          if (!key) continue;
-          const entry =
-            byPerson.get(key) ??
-            { bookingId: String(r.id), name: r.name, serviceIds: new Set<string>() };
-          entry.serviceIds.add(String(s.id));
-          byPerson.set(key, entry);
-        }
-      }
+    // The ONLINE-BOOKABLE techs come from /resources (their `id` is the value the
+    // availability + appointment endpoints expect as resource_id). This is a
+    // smaller, different set than the resources embedded in the service catalog —
+    // using the catalog ids makes per-tech availability come back empty.
+    let rows: RawResource[];
+    try {
+      const res = await this.client.get<RawResource[] | { data: RawResource[] }>("/resources");
+      rows = Array.isArray(res) ? res : res.data ?? [];
+    } catch {
+      return [];
     }
+    // Every bookable tech can be offered; real per-service/day filtering happens
+    // when we ask the availability endpoint, so serviceIds is left permissive.
+    const allServiceIds = (await this.getServices()).map((s) => s.id);
     let i = 0;
-    return [...byPerson.values()]
+    return rows
+      .filter((r) => r.resourceable_type === "person" && r.status === 1)
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map((v) => ({
-        id: v.bookingId,
-        name: titleCase(v.name),
+      .map((r) => ({
+        id: String(r.id),
+        name: titleCase(r.name),
         role: "Nail Technician",
         bio: "",
         avatarColor: AVATAR_COLORS[i++ % AVATAR_COLORS.length],
-        serviceIds: [...v.serviceIds],
+        serviceIds: allServiceIds,
         workDays: [0, 1, 2, 3, 4, 5, 6], // availability comes from the live endpoint
       }));
   }
