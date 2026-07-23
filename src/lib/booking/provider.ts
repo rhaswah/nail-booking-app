@@ -8,6 +8,7 @@ import type {
   TimeSlot,
 } from "@/lib/booking/types";
 import { MockProvider } from "@/lib/booking/mock-provider";
+import { ByChronosProvider } from "@/lib/booking/bychronos-provider";
 
 /**
  * Abstraction every data source implements. The app only ever talks to a
@@ -39,7 +40,7 @@ let instance: BookingProvider | null = null;
 /**
  * Provider factory. Controlled by `BOOKING_PROVIDER` env var:
  *   - 'mock' (default): in-memory seed data, dev-server persistent.
- *   - 'bychronos': byChronos POS connector (not configured yet — throws).
+ *   - 'bychronos': live byChronos POS connector (needs BYCHRONOS_* env vars).
  */
 export function getProvider(): BookingProvider {
   if (instance) return instance;
@@ -49,9 +50,8 @@ export function getProvider(): BookingProvider {
       instance = new MockProvider();
       return instance;
     case "bychronos":
-      throw new Error(
-        "byChronos provider is not configured yet — set BOOKING_PROVIDER=mock or add the byChronos connector.",
-      );
+      instance = new ByChronosProvider();
+      return instance;
     default:
       throw new Error(`Unknown BOOKING_PROVIDER: "${kind}"`);
   }
