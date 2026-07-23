@@ -13,6 +13,7 @@ import type {
   TimeSlot,
 } from "@/lib/booking/types";
 import { ANY_STAFF } from "@/lib/booking/types";
+import { encodeConfirm, toConfirmSummary } from "@/lib/booking/confirm-token";
 import { addDaysISO, formatDuration, formatMoney, salonDateISO } from "@/lib/format";
 import { salonConfig, type Weekday } from "@/lib/salon.config";
 import { Sparkle, WandIcon } from "@/components/decor";
@@ -211,7 +212,10 @@ export default function BookingWizard({
       }
       const booking = body.booking ?? (body as Booking);
       if (!booking.id) throw new Error("Unexpected response from the server.");
-      router.push(`/confirmed/${booking.id}`);
+      // Pass the booking summary in the URL so the confirmation renders without
+      // relying on server-side memory (which isn't shared across serverless instances).
+      const token = encodeConfirm(toConfirmSummary(booking));
+      router.push(`/confirmed/${booking.id}?b=${token}`);
       // keep `submitting` true while navigating to prevent double-taps
     } catch (err) {
       setSubmitError(

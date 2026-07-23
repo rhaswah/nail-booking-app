@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getProvider } from "@/lib/booking/provider";
+import { decodeConfirm } from "@/lib/booking/confirm-token";
 import { salonConfig } from "@/lib/salon.config";
 import {
   formatDateLabel,
@@ -53,12 +54,35 @@ function initials(name: string): string {
 
 export default async function ConfirmedPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ b?: string }>;
 }) {
   const { id } = await params;
+  const { b } = await searchParams;
   const provider = getProvider();
-  const booking = await provider.getBooking(id);
+
+  // Prefer a durable lookup (available once byChronos write-back is on); otherwise
+  // rebuild the booking from the URL token so the page works on serverless.
+  let booking = await provider.getBooking(id);
+  if (!booking) {
+    const summary = decodeConfirm(b);
+    if (summary) {
+      booking = {
+        id,
+        serviceIds: summary.serviceIds,
+        staffId: summary.staffId,
+        startISO: summary.startISO,
+        totalCents: summary.totalCents,
+        totalDurationMinutes: summary.totalDurationMinutes,
+        status: summary.status,
+        createdAtISO: summary.startISO,
+        syncedToPos: summary.status === "synced",
+        customer: { firstName: "", lastName: "", phone: "", email: "" },
+      };
+    }
+  }
   if (!booking) notFound();
 
   const [services, staff] = await Promise.all([
