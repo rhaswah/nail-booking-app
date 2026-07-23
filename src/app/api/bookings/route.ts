@@ -1,7 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getProvider } from "@/lib/booking/provider";
-import { ANY_STAFF, type BookingCustomer, type BookingRequest } from "@/lib/booking/types";
+import { ANY_STAFF, type Booking, type BookingCustomer, type BookingRequest } from "@/lib/booking/types";
+import { createVerifiedAppointment } from "@/lib/booking/bychronos-booking";
+import { decodeSessionCookie, SESSION_COOKIE } from "@/lib/booking/session-cookie";
+import { salonConfig } from "@/lib/salon.config";
 import { isNonEmptyString, isValidDateISO, jsonError, jsonServerError } from "../_lib/http";
+
+/** Real bookings write to byChronos only when this is explicitly enabled. */
+const WRITE_ENABLED = process.env.BYCHRONOS_ALLOW_WRITE === "true";
 
 export const dynamic = "force-dynamic";
 
@@ -110,6 +116,45 @@ export async function POST(request: NextRequest) {
       if (!knownStaff.some((t) => t.id === req.staffId)) {
         return jsonError(`Unknown staff id: "${req.staffId}".`, 400);
       }
+    }
+
+    // Real write-back to byChronos (Option B): requires the customer to have
+    // completed phone verification, which set the HttpOnly session cookie.
+    if (WRITE_ENABLED) {
+      const session = decodeSessionCookie(request.cookies.get(SESSION_COOKIE)?.value);
+      if (!session) {
+        return jsonError("Please verify your phone number before booking.", 428);
+      }
+      const chosen = knownServices.filter((s) => req.serviceIds.includes(s.id));
+      const totalCents = chosen.reduce((n, s) => n + s.priceCents, 0);
+      const totalDurationMinutes = chosen.reduce((n, s) => n + s.durationMinutes, 0);
+      const start = new Date(req.startISO);
+      const { id } = await createVerifiedAppointment({
+        session,
+        serviceIds: req.serviceIds,
+        resourceId: req.staffId !== ANY_STAFF ? Number(req.staffId) : undefined,
+        startUnix: Math.floor(start.getTime() / 1000),
+        durationMinutes: totalDurationMinutes,
+        timezone: salonConfig.timezone,
+        firstName: req.customer.firstName,
+        lastName: req.customer.lastName,
+        email: req.customer.email,
+        phone: req.customer.phone,
+        note: req.customer.notes,
+      });
+      const booking: Booking = {
+        id: id || `bc_${start.getTime().toString(36)}`,
+        serviceIds: req.serviceIds,
+        staffId: req.staffId,
+        startISO: start.toISOString(),
+        customer: { ...req.customer },
+        status: "synced",
+        createdAtISO: new Date().toISOString(),
+        totalCents,
+        totalDurationMinutes,
+        syncedToPos: true,
+      };
+      return NextResponse.json(booking, { status: 201 });
     }
 
     const booking = await provider.createBooking(req);

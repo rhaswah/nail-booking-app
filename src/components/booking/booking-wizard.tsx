@@ -31,6 +31,11 @@ interface BookingWizardProps {
   staff: Staff[];
 }
 
+/** Phone-verification lifecycle on the review step. */
+type VerifyPhase = "idle" | "sending" | "sent" | "verifying" | "verified";
+
+const RESEND_COOLDOWN_SECONDS = 30;
+
 /** Step order — hash keeps the browser back button working within the wizard. */
 const STEPS = [
   { hash: "services", title: "Choose your services" },
@@ -57,6 +62,48 @@ export default function BookingWizard({
   const [customer, setCustomer] = useState<CustomerDraft>(emptyCustomerDraft);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // ── Optional phone verification ────────────────────────────────────────
+  // The catalog endpoint tells us whether byChronos write-back (and therefore
+  // phone verification) is switched on. When off, this stays false and the
+  // wizard behaves exactly as before.
+  const [requireVerification, setRequireVerification] = useState(false);
+  // 'idle' → not yet sent · 'sending' · 'sent' (code input shown) · 'verifying'
+  // · 'verified' (Confirm unlocked)
+  const [verifyPhase, setVerifyPhase] = useState<VerifyPhase>("idle");
+  const [verifyCode, setVerifyCode] = useState("");
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Read `requireVerification` from the catalog endpoint on mount. Steps 1–4
+  // still use the props passed in from the server component, untouched.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/services");
+        if (!res.ok) return;
+        const data: unknown = await res.json().catch(() => null);
+        const flag = (data as { requireVerification?: unknown } | null)
+          ?.requireVerification;
+        if (!cancelled && flag === true) setRequireVerification(true);
+      } catch {
+        // Network hiccup reading the flag → fail open to today's behavior.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Resend cooldown ticker.
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  const isVerified = verifyPhase === "verified";
 
   // ── Derived state ──────────────────────────────────────────────────────
   const selectedServices = useMemo(
@@ -173,9 +220,85 @@ export default function BookingWizard({
     setCustomer((c) => ({ ...c, ...patch }));
   }, []);
 
+  // ── Phone verification handlers ────────────────────────────────────────
+  const sendVerification = useCallback(async () => {
+    if (verifyPhase === "sending" || verifyPhase === "verifying") return;
+    const phone = customer.phone.trim();
+    setVerifyError(null);
+    setVerifyPhase("sending");
+    try {
+      const res = await fetch("/api/verify/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const data: unknown = await res.json().catch(() => null);
+      const body = (data ?? {}) as { ok?: boolean; error?: string };
+      if (!res.ok || body.ok !== true) {
+        throw new Error(
+          body.error ?? "Couldn't send a code right now — please try again.",
+        );
+      }
+      setVerifyPhase("sent");
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
+    } catch (err) {
+      setVerifyPhase("idle");
+      setVerifyError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Couldn't send a code right now — please try again.",
+      );
+    }
+  }, [customer.phone, verifyPhase]);
+
+  const checkVerification = useCallback(async () => {
+    if (verifyPhase === "verifying") return;
+    const code = verifyCode.trim();
+    if (code.length === 0) {
+      setVerifyError("Enter the 6-digit code we texted you.");
+      return;
+    }
+    setVerifyError(null);
+    setVerifyPhase("verifying");
+    try {
+      const res = await fetch("/api/verify/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: customer.phone.trim(),
+          code,
+          firstName: customer.firstName.trim(),
+          lastName: customer.lastName.trim(),
+          email: customer.email.trim(),
+        }),
+      });
+      const data: unknown = await res.json().catch(() => null);
+      const body = (data ?? {}) as {
+        verified?: boolean;
+        error?: string;
+      };
+      if (res.ok && body.verified === true) {
+        setVerifyPhase("verified");
+        setVerifyError(null);
+        return;
+      }
+      // Wrong/expired code (200 {verified:false}) or a hard error — keep the
+      // input open so the customer can retry.
+      setVerifyPhase("sent");
+      setVerifyError(
+        body.error ?? "That code didn't match. Double-check it or resend one.",
+      );
+    } catch {
+      setVerifyPhase("sent");
+      setVerifyError("Couldn't verify the code — please try again.");
+    }
+  }, [customer, verifyCode, verifyPhase]);
+
   // ── Submit ─────────────────────────────────────────────────────────────
   const submit = useCallback(async () => {
     if (!staffSelection || !selectedSlot || submitting) return;
+    // When verification is required, never POST /api/bookings before verified.
+    if (requireVerification && !isVerified) return;
     setSubmitting(true);
     setSubmitError(null);
     const notes = customer.notes.trim();
@@ -227,6 +350,8 @@ export default function BookingWizard({
     }
   }, [
     customer,
+    isVerified,
+    requireVerification,
     router,
     selectedServiceIds,
     selectedSlot,
@@ -242,7 +367,8 @@ export default function BookingWizard({
     { label: "Review booking", enabled: detailsValid },
     {
       label: submitting ? "Booking…" : "Confirm booking",
-      enabled: !submitting,
+      // Verification (when required) must land before the booking can submit.
+      enabled: !submitting && (!requireVerification || isVerified),
     },
   ][step];
 
@@ -367,6 +493,19 @@ export default function BookingWizard({
             customer={customer}
             submitError={submitError}
             onEdit={goToStep}
+            verification={
+              requireVerification
+                ? {
+                    phase: verifyPhase,
+                    code: verifyCode,
+                    error: verifyError,
+                    resendCooldown,
+                    onCodeChange: setVerifyCode,
+                    onSend: () => void sendVerification(),
+                    onVerify: () => void checkVerification(),
+                  }
+                : null
+            }
           />
         )}
       </main>

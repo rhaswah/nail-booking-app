@@ -16,7 +16,9 @@ export async function GET() {
       provider.getServices(),
       provider.getStaff(),
     ]);
-    return NextResponse.json({ categories, services, staff });
+    // When write-back is on, the wizard must collect a phone verification code.
+    const requireVerification = process.env.BYCHRONOS_ALLOW_WRITE === "true";
+    return NextResponse.json({ categories, services, staff, requireVerification });
   } catch (err) {
     return jsonServerError(err);
   }
