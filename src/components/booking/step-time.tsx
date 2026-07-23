@@ -132,7 +132,7 @@ export default function StepTime({
                 type="button"
                 aria-pressed={sel}
                 onClick={() => onSelectDate(d)}
-                className={`relative flex w-16 shrink-0 snap-start flex-col items-center rounded-card border px-2 py-2.5 transition-all ${
+                className={`relative flex min-h-[44px] w-16 shrink-0 snap-start flex-col items-center rounded-card border px-2 py-2.5 transition-all ${
                   sel
                     ? "border-pink-500 bg-pink-50 shadow-pink"
                     : "border-pink-100 bg-white"
@@ -230,7 +230,7 @@ export default function StepTime({
                         type="button"
                         aria-pressed={sel}
                         onClick={() => onSelectSlot(slot)}
-                        className={`relative flex items-center justify-center gap-1 rounded-full border px-2 py-2.5 text-sm tabular-nums transition-all ${
+                        className={`relative flex min-h-[44px] items-center justify-center gap-1 rounded-full border px-2 py-3 text-sm tabular-nums transition-all ${
                           sel
                             ? "border-pink-500 bg-pink-500 text-white shadow-pink"
                             : "border-pink-200 bg-white text-ink-800 active:bg-pink-50"

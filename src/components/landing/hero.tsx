@@ -12,7 +12,7 @@ export function Hero({ openTodayLabel, isOpenToday }: HeroProps) {
   return (
     <header className="relative overflow-hidden pt-14 pb-12 text-center">
       {/* Twinkling sparkle scatter behind the wordmark */}
-      <SparkleField count={14} className="opacity-80" />
+      <SparkleField count={9} className="opacity-70" />
 
       {/* Floating fairy mascot */}
       <Fairy
@@ -28,7 +28,7 @@ export function Hero({ openTodayLabel, isOpenToday }: HeroProps) {
           twinkle
           className="mr-1 inline-block align-middle"
         />
-        Nail Studio
+        Nail Spa
       </p>
 
       <h1 className="font-script text-gradient-pink relative mt-2 text-5xl leading-[1.15] tracking-tight">

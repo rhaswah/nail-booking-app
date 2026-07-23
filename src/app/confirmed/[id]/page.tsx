@@ -80,8 +80,8 @@ export default async function ConfirmedPage({
         {/* Sparkle burst backdrop (only for the happy path) */}
         {!cancelled && (
           <SparkleField
-            count={16}
-            className="-inset-x-6 -top-4 bottom-auto h-64"
+            count={10}
+            className="-inset-x-6 -top-4 bottom-auto h-64 opacity-70"
           />
         )}
 

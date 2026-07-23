@@ -391,7 +391,7 @@ export default function BookingWizard({
             type="button"
             onClick={onCta}
             disabled={!cta.enabled}
-            className="relative h-12 flex-1 overflow-hidden rounded-cta bg-gradient-to-r from-pink-500 to-pink-600 font-medium text-white shadow-pink transition-colors active:from-pink-600 active:to-pink-700 disabled:from-ink-200 disabled:to-ink-200 disabled:text-ink-400 disabled:shadow-none"
+            className="relative h-12 flex-1 overflow-hidden rounded-cta bg-gradient-to-r from-pink-500 to-lilac-500 font-medium text-white shadow-pink transition-colors active:from-pink-600 active:to-lilac-600 disabled:from-ink-200 disabled:to-ink-200 disabled:text-ink-400 disabled:shadow-none"
           >
             <span className="relative z-10 flex items-center justify-center gap-1.5">
               {step === 4 && !submitting && (
